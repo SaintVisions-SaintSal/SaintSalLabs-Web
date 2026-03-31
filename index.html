@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SaintSal™ Labs — AI Intelligence Platform</title>
+  <meta name="description" content="The most powerful AI platform on earth. 8 intelligence verticals. Builder v2. HACP™ Protocol. US Patent #10,290,222." />
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" href="/assets/favicon.ico" />
+  <!-- Supabase -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    window.supabase = createClient(
+      'https://euxrlpuegeiggedqbkiv.supabase.co',
+      window.__SUPABASE_ANON_KEY__ || ''
+    );
+  </script>
+</head>
+<body>
+
+<!-- ═══ AUTH SCREEN ═══════════════════════════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-text">SaintSal™ Labs</div>
+      <div class="auth-logo-sub">HACP™ Powered · US Patent #10,290,222</div>
+    </div>
+
+    <div id="auth-login">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="auth-email" placeholder="ryan@saintsallabs.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="auth-password" placeholder="••••••••" />
+      </div>
+      <button class="btn btn-primary w-full" style="margin-top:8px" onclick="signIn()">
+        Sign In
+      </button>
+      <div class="divider"></div>
+      <button class="btn btn-ghost w-full" onclick="signInGoogle()">
+        Continue with Google
+      </button>
+      <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--t3)">
+        No account? <a href="#" onclick="showSignup()">Create one free</a>
+      </p>
+    </div>
+
+    <div id="auth-signup" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="signup-name" placeholder="Ryan Capatosto" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="signup-email" placeholder="ryan@saintsallabs.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="signup-password" placeholder="Min 8 characters" />
+      </div>
+      <button class="btn btn-primary w-full" style="margin-top:8px" onclick="signUp()">
+        Create Account
+      </button>
+      <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--t3)">
+        Already have one? <a href="#" onclick="showLogin()">Sign in</a>
+      </p>
+    </div>
+
+    <p id="auth-error" style="color:var(--coral);font-size:12px;margin-top:12px;display:none"></p>
+  </div>
+</div>
+
+<!-- ═══ APP SHELL ═══════════════════════════════════════════════════════════ -->
+<div id="app" style="display:none">
+
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">SaintSal™ Labs</div>
+      <div class="sidebar-logo-sub">HACP™ · US #10,290,222</div>
+    </div>
+
+    <div class="nav-section">
+      <button class="nav-item active" data-page="headquarters" onclick="navigate('headquarters')">
+        <span class="nav-icon">🏠</span> Headquarters
+      </button>
+      <button class="nav-item" data-page="chat" onclick="navigate('chat')">
+        <span class="nav-icon">🔍</span> SAL Search
+        <span class="nav-badge">8 Verticals</span>
+      </button>
+      <button class="nav-item" data-page="builder" onclick="navigate('builder')">
+        <span class="nav-icon">🔨</span> Builder v2
+        <span class="nav-badge">New</span>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Intelligence</div>
+      <button class="nav-item" data-page="career" onclick="navigate('career')">
+        <span class="nav-icon">🎯</span> Career Suite
+      </button>
+      <button class="nav-item" data-page="cards" onclick="navigate('cards')">
+        <span class="nav-icon">🃏</span> CookinCards™
+      </button>
+      <button class="nav-item" data-page="creative" onclick="navigate('creative')">
+        <span class="nav-icon">🎨</span> Creative Studio
+      </button>
+      <button class="nav-item" data-page="launchpad" onclick="navigate('launchpad')">
+        <span class="nav-icon">🚀</span> Launch Pad
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Business</div>
+      <button class="nav-item" data-page="ghl" onclick="navigate('ghl')">
+        <span class="nav-icon">📊</span> GHL Intel Hub
+      </button>
+      <button class="nav-item" data-page="finance" onclick="navigate('finance')">
+        <span class="nav-icon">💰</span> Finance
+      </button>
+      <button class="nav-item" data-page="realestate" onclick="navigate('realestate')">
+        <span class="nav-icon">🏡</span> Real Estate
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="nav-item" data-page="settings" onclick="navigate('settings')">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+      <div class="user-pill" onclick="navigate('settings')">
+        <div class="user-avatar" id="user-avatar-initials">R</div>
+        <div>
+          <div class="user-name" id="user-display-name">Loading...</div>
+          <div class="user-tier" id="user-tier-badge">Pro</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Topbar -->
+  <header id="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">Headquarters</div>
+      <div class="topbar-sub" id="topbar-sub">AI Intelligence Platform</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="navigate('settings')">⚙️ Settings</button>
+      <button class="btn btn-primary btn-sm" onclick="navigate('builder')">+ New Build</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main">
+
+    <!-- ── Headquarters ─────────────────────────────────────── -->
+    <div id="page-headquarters" class="page active">
+      <h1>Welcome back, <span id="hq-user-name">Cap</span> 👋</h1>
+      <p class="text-muted" style="margin-bottom:24px">Here's your platform at a glance.</p>
+
+      <!-- Stats Grid -->
+      <div class="card-grid" style="margin-bottom:24px" id="hq-stats-grid">
+        <div class="stat-card skeleton" style="height:80px"></div>
+        <div class="stat-card skeleton" style="height:80px"></div>
+        <div class="stat-card skeleton" style="height:80px"></div>
+        <div class="stat-card skeleton" style="height:80px"></div>
+      </div>
+
+      <!-- Quick Actions -->
+      <h2 style="margin-bottom:12px">Quick Actions</h2>
+      <div class="card-grid" style="margin-bottom:24px">
+        <div class="card" style="cursor:pointer" onclick="navigate('builder')">
+          <div class="card-header">
+            <span style="font-size:24px">🔨</span>
+            <div>
+              <h3>Builder v2</h3>
+              <p class="text-muted">5-agent AI app builder</p>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer" onclick="navigate('chat')">
+          <div class="card-header">
+            <span style="font-size:24px">🔍</span>
+            <div>
+              <h3>SAL Search</h3>
+              <p class="text-muted">8 intelligence verticals</p>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer" onclick="navigate('career')">
+          <div class="card-header">
+            <span style="font-size:24px">🎯</span>
+            <div>
+              <h3>Career Suite</h3>
+              <p class="text-muted">Resume, jobs, coaching</p>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer" onclick="navigate('cards')">
+          <div class="card-header">
+            <span style="font-size:24px">🃏</span>
+            <div>
+              <h3>CookinCards™</h3>
+              <p class="text-muted">Scan, grade, collect</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GHL Pipeline -->
+      <h2 style="margin-bottom:12px">CRM Pipeline</h2>
+      <div id="hq-ghl-data" class="card">
+        <p class="text-muted">Loading pipeline data...</p>
+      </div>
+    </div>
+
+    <!-- ── SAL Search / Chat ─────────────────────────────────── -->
+    <div id="page-chat" class="page" style="display:none;padding:0">
+      <div id="chat-page" style="display:flex;flex-direction:column;height:calc(100vh - 56px)">
+        <!-- Vertical pills -->
+        <div style="padding:16px 24px 0;border-bottom:1px solid var(--brd)">
+          <div class="vertical-pills" id="vertical-pills">
+            <button class="vertical-pill active" data-vertical="search" onclick="setVertical('search')">🔍 Search</button>
+            <button class="vertical-pill" data-vertical="sports" onclick="setVertical('sports')">⚽ Sports</button>
+            <button class="vertical-pill" data-vertical="finance" onclick="setVertical('finance')">💰 Finance</button>
+            <button class="vertical-pill" data-vertical="realestate" onclick="setVertical('realestate')">🏠 Real Estate</button>
+            <button class="vertical-pill" data-vertical="medical" onclick="setVertical('medical')">🏥 Medical</button>
+            <button class="vertical-pill" data-vertical="legal" onclick="setVertical('legal')">⚖️ Legal</button>
+            <button class="vertical-pill" data-vertical="technology" onclick="setVertical('technology')">💻 Tech</button>
+            <button class="vertical-pill" data-vertical="govdefense" onclick="setVertical('govdefense')">🛡️ Gov/Defense</button>
+          </div>
+        </div>
+
+        <!-- Chat messages -->
+        <div class="chat-area" id="chat-messages">
+          <!-- Vertical landing state -->
+          <div id="vertical-landing">
+            <h2 style="margin-bottom:8px">What can I help you with?</h2>
+            <p class="text-muted" style="margin-bottom:20px">SAL is an intelligence engine backed by Claude, Grok, GPT-5, and Gemini with real-time search.</p>
+            <div class="trending-grid" id="trending-content">
+              <!-- Populated by chat.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat input -->
+        <div class="chat-input-bar">
+          <div class="chat-input-wrap">
+            <textarea
+              class="chat-input"
+              id="chat-input"
+              placeholder="Ask SAL anything..."
+              rows="1"
+              onkeydown="chatKeydown(event)"
+              oninput="autoResize(this)"
+            ></textarea>
+            <button class="chat-send-btn" onclick="sendMessage()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Builder v2 ────────────────────────────────────────── -->
+    <div id="page-builder" class="page" style="display:none;padding:0">
+      <div id="builder-page" style="display:flex;flex-direction:column;height:calc(100vh - 56px)">
+        <!-- Builder topbar -->
+        <div class="builder-topbar">
+          <select id="builder-model" style="width:auto;padding:6px 10px;font-size:12px">
+            <option value="grok">Grok 4.20</option>
+            <option value="claude-opus">Claude Opus</option>
+            <option value="gpt5">GPT-5 Core</option>
+          </select>
+          <span class="badge badge-gold" id="builder-session-badge">New Build</span>
+          <span id="builder-timer" style="font-size:12px;color:var(--t3);font-family:var(--mono)">⏱ 0:00</span>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" id="builder-deploy-btn" onclick="showDeployMenu()" disabled>Deploy ▼</button>
+            <button class="btn btn-primary btn-sm" onclick="newBuild()">+ New</button>
+          </div>
+        </div>
+
+        <!-- Builder 3-pane layout -->
+        <div class="builder-main">
+          <!-- Pane 1: Chat + Agents -->
+          <div class="builder-pane">
+            <div class="builder-pane-header">💬 Chat + Agents</div>
+            <div class="builder-pane-content">
+              <!-- Agent cards -->
+              <div class="agent-cards" id="agent-cards">
+                <div class="agent-card" data-status="idle" data-agent="grok">
+                  <div class="agent-dot"></div>
+                  <div><div class="agent-name">Grok 4.20</div><div class="agent-role">Architect</div></div>
+                  <span class="agent-status-text">Idle</span>
+                </div>
+                <div class="agent-card" data-status="idle" data-agent="stitch">
+                  <div class="agent-dot" style="background:var(--blue)"></div>
+                  <div><div class="agent-name">Stitch</div><div class="agent-role">Designer</div></div>
+                  <span class="agent-status-text">Idle</span>
+                </div>
+                <div class="agent-card" data-status="idle" data-agent="claude-sonnet">
+                  <div class="agent-dot" style="background:var(--purple)"></div>
+                  <div><div class="agent-name">Claude Sonnet</div><div class="agent-role">Engineer</div></div>
+                  <span class="agent-status-text">Idle</span>
+                </div>
+                <div class="agent-card" data-status="idle" data-agent="claude-opus">
+                  <div class="agent-dot" style="background:var(--purple)"></div>
+                  <div><div class="agent-name">Claude Opus</div><div class="agent-role">Synthesizer</div></div>
+                  <span class="agent-status-text">Idle</span>
+                </div>
+                <div class="agent-card" data-status="idle" data-agent="gpt5">
+                  <div class="agent-dot" style="background:var(--green)"></div>
+                  <div><div class="agent-name">GPT-5 Core</div><div class="agent-role">Validator</div></div>
+                  <span class="agent-status-text">Idle</span>
+                </div>
+              </div>
+
+              <!-- Agent messages / chat -->
+              <div id="builder-chat-messages" style="font-size:13px;line-height:1.6;color:var(--t2)">
+                <p>Describe what you want to build. SAL's 5-agent pipeline will architect, design, build, and validate your app.</p>
+              </div>
+            </div>
+
+            <!-- Builder input -->
+            <div style="padding:12px;border-top:1px solid var(--brd)">
+              <div class="chat-input-wrap">
+                <textarea
+                  class="chat-input"
+                  id="builder-input"
+                  placeholder="Build me a SaaS dashboard with auth..."
+                  rows="2"
+                  onkeydown="builderKeydown(event)"
+                ></textarea>
+                <button class="chat-send-btn" onclick="startBuild()">➤</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pane 2: File Tree + Code -->
+          <div class="builder-pane">
+            <div class="builder-pane-header">📁 Files + Code</div>
+            <div class="code-file-tree" id="file-tree">
+              <p style="font-size:12px;color:var(--t3);padding:8px">No files yet.</p>
+            </div>
+            <div class="code-editor" id="code-editor">// Generated code appears here</div>
+          </div>
+
+          <!-- Pane 3: Preview -->
+          <div class="builder-pane">
+            <div class="builder-pane-header">👁 Preview</div>
+            <div style="flex:1;display:flex;flex-direction:column">
+              <div class="preview-placeholder" id="preview-placeholder">
+                <div class="preview-placeholder-icon">🔨</div>
+                <p>Build something to see the preview</p>
+              </div>
+              <iframe id="preview-frame" class="preview-frame" style="display:none"></iframe>
+            </div>
+          </div>
+        </div>
+
+        <!-- Builder footer terminal -->
+        <div class="builder-footer">
+          <span style="color:var(--gold)">●</span>
+          <span id="builder-status-text">Ready to build</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Career Suite ──────────────────────────────────────── -->
+    <div id="page-career" class="page" style="display:none">
+      <h1>Career Suite</h1>
+      <p class="text-muted" style="margin-bottom:20px">AI-powered career tools — resume, jobs, coaching, and business planning.</p>
+      <div class="tabs" id="career-tabs">
+        <button class="tab active" onclick="switchCareerTab('resume')">Resume Builder</button>
+        <button class="tab" onclick="switchCareerTab('jobs')">Job Search</button>
+        <button class="tab" onclick="switchCareerTab('coach')">AI Coach</button>
+        <button class="tab" onclick="switchCareerTab('coverletter')">Cover Letter</button>
+        <button class="tab" onclick="switchCareerTab('interview')">Interview Prep</button>
+        <button class="tab" onclick="switchCareerTab('salary')">Salary Negotiator</button>
+        <button class="tab" onclick="switchCareerTab('linkedin')">LinkedIn Optimizer</button>
+        <button class="tab" onclick="switchCareerTab('bizplan')">Business Plan AI</button>
+      </div>
+      <div id="career-content"><!-- Populated by career.js --></div>
+    </div>
+
+    <!-- ── CookinCards ───────────────────────────────────────── -->
+    <div id="page-cards" class="page" style="display:none">
+      <h1>CookinCards™</h1>
+      <p class="text-muted" style="margin-bottom:20px">Scan, grade, and value your card collection. Powered by Ximilar AI.</p>
+      <div class="tabs">
+        <button class="tab active" onclick="switchCardsTab('scan')">📷 Scan Card</button>
+        <button class="tab" onclick="switchCardsTab('search')">🔍 Search</button>
+        <button class="tab" onclick="switchCardsTab('collection')">📁 My Collection</button>
+        <button class="tab" onclick="switchCardsTab('trending')">📈 Trending</button>
+      </div>
+      <div id="cards-content"><!-- Populated by cards.js --></div>
+    </div>
+
+    <!-- ── Creative Studio ───────────────────────────────────── -->
+    <div id="page-creative" class="page" style="display:none">
+      <h1>Creative Studio</h1>
+      <p class="text-muted" style="margin-bottom:20px">AI content generation, image creation, and social media management.</p>
+      <div class="tabs">
+        <button class="tab active" onclick="switchCreativeTab('content')">📝 Content Gen</button>
+        <button class="tab" onclick="switchCreativeTab('image')">🎨 Image Gen</button>
+        <button class="tab" onclick="switchCreativeTab('social')">📱 Social Post</button>
+        <button class="tab" onclick="switchCreativeTab('calendar')">📅 Content Calendar</button>
+      </div>
+      <div id="creative-content"><!-- Populated by creative.js --></div>
+    </div>
+
+    <!-- ── Launch Pad ────────────────────────────────────────── -->
+    <div id="page-launchpad" class="page" style="display:none">
+      <h1>Launch Pad</h1>
+      <p class="text-muted" style="margin-bottom:20px">Business formation in one session — name check, entity, domain, DNS, compliance.</p>
+      <div id="launchpad-content"><!-- Populated by launchpad.js --></div>
+    </div>
+
+    <!-- ── GHL Intel Hub ─────────────────────────────────────── -->
+    <div id="page-ghl" class="page" style="display:none">
+      <h1>GHL Intel Hub</h1>
+      <p class="text-muted" style="margin-bottom:20px">GoHighLevel CRM — pipelines, contacts, leads, and activity.</p>
+      <div class="tabs">
+        <button class="tab active" onclick="switchGHLTab('dashboard')">📊 Dashboard</button>
+        <button class="tab" onclick="switchGHLTab('contacts')">👥 Contacts</button>
+        <button class="tab" onclick="switchGHLTab('pipelines')">🔄 Pipelines</button>
+      </div>
+      <div id="ghl-content"><!-- Populated by ghl.js --></div>
+    </div>
+
+    <!-- ── Finance ───────────────────────────────────────────── -->
+    <div id="page-finance" class="page" style="display:none">
+      <h1>Finance</h1>
+      <p class="text-muted" style="margin-bottom:20px">Market intelligence, portfolio analysis, and capital markets.</p>
+      <div id="finance-content"><!-- Populated by finance.js --></div>
+    </div>
+
+    <!-- ── Real Estate ───────────────────────────────────────── -->
+    <div id="page-realestate" class="page" style="display:none">
+      <h1>Real Estate</h1>
+      <p class="text-muted" style="margin-bottom:20px">Property search, comps, cap rates, and distressed leads.</p>
+      <div id="realestate-content"><!-- Populated by finance.js --></div>
+    </div>
+
+    <!-- ── Settings ──────────────────────────────────────────── -->
+    <div id="page-settings" class="page" style="display:none">
+      <h1>Settings</h1>
+      <p class="text-muted" style="margin-bottom:24px">Manage your account, subscription, and connected services.</p>
+
+      <div style="max-width:600px">
+        <h2 style="margin-bottom:16px">Account</h2>
+        <div class="card" style="margin-bottom:24px">
+          <div class="form-group">
+            <label class="form-label">Display Name</label>
+            <input type="text" id="settings-name" placeholder="Ryan Capatosto" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" id="settings-email" disabled />
+          </div>
+          <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+        </div>
+
+        <h2 style="margin-bottom:16px">Subscription</h2>
+        <div class="card" id="subscription-card" style="margin-bottom:24px">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-8">
+                <h3 id="current-plan-name">Pro Plan</h3>
+                <span class="badge badge-gold" id="current-plan-badge">Active</span>
+              </div>
+              <p class="text-muted" id="current-plan-detail">$97/mo · 2,000 compute min/mo</p>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('billing')">Manage</button>
+          </div>
+        </div>
+
+        <h2 style="margin-bottom:16px">Connected Services</h2>
+        <div class="card" style="margin-bottom:24px">
+          <div id="connected-services-list">
+            <div class="flex items-center justify-between" style="padding:8px 0;border-bottom:1px solid var(--brd)">
+              <span class="text-muted">GoHighLevel</span>
+              <span class="badge badge-green">Connected</span>
+            </div>
+            <div class="flex items-center justify-between" style="padding:8px 0;border-bottom:1px solid var(--brd)">
+              <span class="text-muted">Stripe</span>
+              <span class="badge badge-green">Live</span>
+            </div>
+            <div class="flex items-center justify-between" style="padding:8px 0">
+              <span class="text-muted">Supabase</span>
+              <span class="badge badge-green">Connected</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-danger" onclick="signOut()">Sign Out</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Scripts -->
+<script src="/app.js"></script>
+<script src="/chat.js"></script>
+<script src="/builder.js"></script>
+<script src="/career.js"></script>
+<script src="/cards.js"></script>
+<script src="/creative.js"></script>
+<script src="/launchpad.js"></script>
+<script src="/ghl.js"></script>
+<script src="/finance.js"></script>
+
+</body>
+</html>
